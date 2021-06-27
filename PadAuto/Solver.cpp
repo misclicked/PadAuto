@@ -66,14 +66,19 @@ void Solver::init(vector<unsigned char> pixels, int height, int width)
 
 	RGB board[5][6] = { 0 };
 
+	int x_index = top_left_x + box_size_width_3_1;
+	int y_index = 0;
 	for (int i = 0; i < 5; i++) {
+		x_index += box_size_height;
+		y_index = top_left_y + box_size_height_3_1;
 		for (int j = 0; j < 6; j++) {
+			y_index += box_size_width;
 			int counter = 0;
 			for (int ii = 0; top_left_x + i * box_size_height + ii < height && ii + box_size_width_3_1 < box_size_width_3_2; ii++) {
 				for (int jj = 0; top_left_y + j * box_size_width + jj < width && jj + box_size_height_3_1 < box_size_width_3_2; jj++) {
-					board[i][j].R += rgb[top_left_x + box_size_width_3_1 + i * box_size_height + ii][top_left_y + box_size_height_3_1 + j * box_size_width + jj].R;
-					board[i][j].G += rgb[top_left_x + box_size_width_3_1 + i * box_size_height + ii][top_left_y + box_size_height_3_1 + j * box_size_width + jj].G;
-					board[i][j].B += rgb[top_left_x + box_size_width_3_1 + i * box_size_height + ii][top_left_y + box_size_height_3_1 + j * box_size_width + jj].B;
+					board[i][j].R += rgb[x_index + ii][y_index + jj].R;
+					board[i][j].G += rgb[x_index + ii][y_index + jj].G;
+					board[i][j].B += rgb[x_index + ii][y_index + jj].B;
 					counter++;
 				}
 			}
@@ -90,22 +95,22 @@ void Solver::init(vector<unsigned char> pixels, int height, int width)
 			int G = board[i][j].G;
 			int B = board[i][j].B;
 			if (B > 200) {
-				board_string.push_back('1'); //¤ô
+				board_string.emplace_back('1'); //Â¤Ã´
 			}
 			else if (R > 200 && B > 140) {
-				board_string.push_back('5'); //¤ß
+				board_string.emplace_back('5'); //Â¤ÃŸ
 			}
 			else if (R > 200 && G > 200) {
-				board_string.push_back('3'); //¥ú
+				board_string.emplace_back('3'); //Â¥Ãº
 			}
 			else if (R > 200) {
-				board_string.push_back('0'); //¤õ
+				board_string.emplace_back('0'); //Â¤Ãµ
 			}
 			else if (R > 100 && B > 100 && G < 100) {
-				board_string.push_back('4'); //·t
+				board_string.emplace_back('4'); //Â·t
 			}
 			else {
-				board_string.push_back('2'); //¤ì
+				board_string.emplace_back('2'); //Â¤Ã¬
 			}
 		}
 	}
@@ -267,10 +272,10 @@ Solver::solution Solver::solve(int max_depth)
 	for (int i = 1; i <= 5; i++) {
 		for (int j = 1; j <= 6; j++) {
 			if (this->board[i][j] == 5) {
-				vec.push_back({ INT_MAX, {i, j} });
+				vec.emplace_back({ INT_MAX, {i, j} });
 			}
 			else {
-				vec.push_back({ count_colors[board[i][j]], {i, j}});
+				vec.emplace_back({ count_colors[board[i][j]], {i, j}});
 			}
 		}
 	}
@@ -300,7 +305,7 @@ Solver::solution Solver::solve(int max_depth)
 				if (in_board(next_x, next_y)) {
 					state next_state = current_state;
 					next_state.cor = { next_x, next_y };
-					next_state.path.push_back(i);
+					next_state.path.emplace_back(i);
 					int board_hash = hash_board(next_state.cor, { x, y }, next_state.path);
 					pair<int, int> is_ok = Solver::count_combos(global_iterator++, { x, y }, next_state.path);
 					next_state.combo = is_ok.first;
