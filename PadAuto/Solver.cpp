@@ -95,22 +95,22 @@ void Solver::init(vector<unsigned char> pixels, int height, int width)
 			int G = board[i][j].G;
 			int B = board[i][j].B;
 			if (B > 200) {
-				board_string.emplace_back('1'); //¤ô
+				board_string.push_back('1'); //¤ô
 			}
 			else if (R > 200 && B > 140) {
-				board_string.emplace_back('5'); //¤ß
+				board_string.push_back('5'); //¤ß
 			}
 			else if (R > 200 && G > 200) {
-				board_string.emplace_back('3'); //¥ú
+				board_string.push_back('3'); //¥ú
 			}
 			else if (R > 200) {
-				board_string.emplace_back('0'); //¤õ
+				board_string.push_back('0'); //¤õ
 			}
 			else if (R > 100 && B > 100 && G < 100) {
-				board_string.emplace_back('4'); //·t
+				board_string.push_back('4'); //·t
 			}
 			else {
-				board_string.emplace_back('2'); //¤ì
+				board_string.push_back('2'); //¤ì
 			}
 		}
 	}
@@ -272,10 +272,10 @@ Solver::solution Solver::solve(int max_depth)
 	for (int i = 1; i <= 5; i++) {
 		for (int j = 1; j <= 6; j++) {
 			if (this->board[i][j] == 5) {
-				vec.emplace_back({ INT_MAX, {i, j} });
+				vec.push_back({ INT_MAX, {i, j} });
 			}
 			else {
-				vec.emplace_back({ count_colors[board[i][j]], {i, j}});
+				vec.push_back({ count_colors[board[i][j]], {i, j}});
 			}
 		}
 	}
