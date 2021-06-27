@@ -8,6 +8,7 @@
 #include "WindowGrabber.h"
 #include "MouseMover.h"
 using namespace std;
+#define OFFSET 96
 
 int main()
 {
