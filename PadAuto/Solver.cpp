@@ -154,7 +154,7 @@ void Solver::apply_board(pair<int, int> start_pos, vector<int> path)
 
 bool Solver::in_board(int x, int y)
 {
-	return x >= 1 && x <= 5 && y >= 1 && y <= 6;
+	return x >= 1 && x <= 4 && y >= 1 && y <= 6;
 }
 
 pair<int, int> Solver::count_combos(int iterator, pair<int, int> start_pos, vector<int> path)

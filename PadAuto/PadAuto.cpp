@@ -36,7 +36,7 @@ int main()
 
             //solver.init("420344302252025230522023111111");
             solver.init(pixels, height, width);
-            Solver::solution solution = solver.solve(20);
+            Solver::solution solution = solver.solve(14);
 
             cout << "solution ready: steps: " << solution.directions.size() << endl;
             //cin.get();

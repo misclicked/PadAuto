@@ -28,7 +28,7 @@ void MouseMover::Move(Solver::solution solution)
     Sleep(10);
     for (const auto& it : vec) {
         SetCursorPos(it.first, it.second);
-        Sleep(50);
+        Sleep(45);
     }
     mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
 }
