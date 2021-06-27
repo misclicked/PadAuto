@@ -32,6 +32,93 @@ void Solver::init(string board_string)
 		}
 	//Solver::print_board();
 }
+void Solver::init(vector<unsigned char> pixels, int height, int width)
+{
+	memset(this->board, -1, sizeof(this->board));
+	memset(this->visited_board, 0, sizeof(this->visited_board));
+	memset(this->count_combo_colors, 0, sizeof(this->count_combo_colors));
+	RGB** rgb = (RGB**)malloc(height * sizeof(RGB*));
+
+	int pixels_counter = 0;
+	for (int i = height - 1; i >= 0; i--) {
+		rgb[i] = (RGB*)malloc(width * sizeof(RGB));
+		for (int j = 0; j < width; j++) {
+			int b = pixels[pixels_counter++];
+			int g = pixels[pixels_counter++];
+			int r = pixels[pixels_counter++];
+			pixels_counter++;
+			rgb[i][j] = { r, g, b };
+		}
+	}
+
+	int top_left_x = 563;
+	int top_left_y = 3;
+	int bot_right_x = 934;
+	int bot_right_y = 451;
+
+	int box_size_width = (bot_right_y - top_left_y) / 6;
+	int box_size_height = (bot_right_x - top_left_x) / 5;
+
+	int box_size_width_3_1 = box_size_width / 3;
+	int box_size_width_3_2 = (box_size_width / 3) * 2;
+	int box_size_height_3_1 = box_size_height / 3;
+	int box_size_height_3_2 = (box_size_height / 3) * 2;
+
+	RGB board[5][6] = { 0 };
+
+	for (int i = 0; i < 5; i++) {
+		for (int j = 0; j < 6; j++) {
+			int counter = 0;
+			for (int ii = 0; top_left_x + i * box_size_height + ii < height && ii + box_size_width_3_1 < box_size_width_3_2; ii++) {
+				for (int jj = 0; top_left_y + j * box_size_width + jj < width && jj + box_size_height_3_1 < box_size_width_3_2; jj++) {
+					board[i][j].R += rgb[top_left_x + box_size_width_3_1 + i * box_size_height + ii][top_left_y + box_size_height_3_1 + j * box_size_width + jj].R;
+					board[i][j].G += rgb[top_left_x + box_size_width_3_1 + i * box_size_height + ii][top_left_y + box_size_height_3_1 + j * box_size_width + jj].G;
+					board[i][j].B += rgb[top_left_x + box_size_width_3_1 + i * box_size_height + ii][top_left_y + box_size_height_3_1 + j * box_size_width + jj].B;
+					counter++;
+				}
+			}
+			board[i][j].R /= counter;
+			board[i][j].G /= counter;
+			board[i][j].B /= counter;
+		}
+	}
+
+	string board_string = "";
+	for (int i = 0; i < 5; i++) {
+		for (int j = 0; j < 6; j++) {
+			int R = board[i][j].R;
+			int G = board[i][j].G;
+			int B = board[i][j].B;
+			if (B > 200) {
+				board_string.push_back('1'); //¤ô
+			}
+			else if (R > 200 && B > 140) {
+				board_string.push_back('5'); //¤ß
+			}
+			else if (R > 200 && G > 200) {
+				board_string.push_back('3'); //¥ú
+			}
+			else if (R > 200) {
+				board_string.push_back('0'); //¤õ
+			}
+			else if (R > 100 && B > 100 && G < 100) {
+				board_string.push_back('4'); //·t
+			}
+			else {
+				board_string.push_back('2'); //¤ì
+			}
+		}
+	}
+	this->input_board_string = board_string;
+	int cpos = 0;
+	if (this->input_board_string.size() == 30)
+		for (int i = 1; i <= 5; i++) {
+			for (int j = 1; j <= 6; j++) {
+				this->board[i][j] = this->input_board_string[cpos++] - '0';
+			}
+		}
+	//Solver::print_board();
+}
 
 void Solver::print_board()
 {
@@ -218,17 +305,18 @@ Solver::solution Solver::solve(int max_depth)
 					pair<int, int> is_ok = Solver::count_combos(global_iterator++, { x, y }, next_state.path);
 					next_state.combo = is_ok.first;
 					if (is_ok.second) {
-						cout << "GOOD" << endl;
-						cout << next_state.combo << " " << next_state.path.size() << endl;
-						Solver::apply_board({ x, y }, next_state.path);
-						Solver::print_board();
+						//cout << "GOOD" << endl;
+						//cout << next_state.combo << " " << next_state.path.size() << endl;
+						//Solver::apply_board({ x, y }, next_state.path);
+						//Solver::print_board();
 						return { {x, y}, next_state.path };
 					}
 					if (existed_board.count(board_hash) || next_state.path.size() > max_depth)continue;
 					existed_board.insert(board_hash);
 					que.push(next_state);
 				}
-			};
+			}
+			if (global_iterator >= 300000)break;
 		}
 	}
 	return solution();

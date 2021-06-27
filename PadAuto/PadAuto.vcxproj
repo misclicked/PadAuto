@@ -139,11 +139,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="MouseMover.cpp" />
     <ClCompile Include="PadAuto.cpp" />
     <ClCompile Include="Solver.cpp" />
     <ClCompile Include="WindowGrabber.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="MouseMover.h" />
     <ClInclude Include="Solver.h" />
     <ClInclude Include="WindowGrabber.h" />
   </ItemGroup>

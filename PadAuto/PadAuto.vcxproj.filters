@@ -24,12 +24,18 @@
     <ClCompile Include="WindowGrabber.cpp">
       <Filter>來源檔案</Filter>
     </ClCompile>
+    <ClCompile Include="MouseMover.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Solver.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
     <ClInclude Include="WindowGrabber.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="MouseMover.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
   </ItemGroup>

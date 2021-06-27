@@ -9,6 +9,7 @@ public:
 	Solver();
 	Solver(string board_string);
 	void init(string board_string);
+	void init(vector<unsigned char> pixels, int height, int width);
 	struct solution {
 		pair<int, int> starting_position;
 		vector<int> directions;
@@ -29,5 +30,10 @@ private:
 		vector<int> path;
 		int combo;
 	};
+
+	struct RGB {
+		int R, G, B;
+	};
+
 };
 

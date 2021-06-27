@@ -6,18 +6,48 @@
 #include <string>
 #include <windows.h>
 #include "WindowGrabber.h"
+#include "MouseMover.h"
 using namespace std;
 
 int main()
 {
-    Solver solver;
-    solver.init("420344302252025230522023111111");
-    solver.solve(26);
 
-    WindowGrabber wg;
-    wg.grab("SDL_app");
+    HWND window = ::FindWindowEx(0, 0, TEXT("SDL_app"), 0);
+    RECT rect = { 0 };
+    GetWindowRect(window, &rect);
+    MouseMover mouse_mover;
+    mouse_mover.rect_bottom = rect.bottom;
+    mouse_mover.rect_right = rect.right;
+
+    SetForegroundWindow(window);
+    SetActiveWindow(window);
+    SetFocus(window);
+    Sleep(300);
+    while (true)
+    {
+        WindowGrabber wg;
+        Solver solver;
+        if (GetKeyState(VK_NUMPAD0) & 0x8000) {
+            cout << "key pressed" << endl;
+            int height;
+            int width;
+            vector<unsigned char> pixels = wg.grab("SDL_app", width, height);
+
+            //solver.init("420344302252025230522023111111");
+            solver.init(pixels, height, width);
+            Solver::solution solution = solver.solve(20);
+
+            cout << "solution ready: steps: " << solution.directions.size() << endl;
+            //cin.get();
+
+            mouse_mover.Move(solution);
+        }
+    }
+
     return 0;
 }
+
+
 
 // 執行程式: Ctrl + F5 或 [偵錯] > [啟動但不偵錯] 功能表
 // 偵錯程式: F5 或 [偵錯] > [啟動偵錯] 功能表
