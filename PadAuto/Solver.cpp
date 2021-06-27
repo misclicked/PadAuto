@@ -6,6 +6,7 @@
 using namespace std;
 
 const int Solver::dir[8][2] = { {0,1},{0,-1},{1,0},{-1,0},{1,1},{-1,-1},{-1,1},{1,-1} };
+int conti[8] = {1, 0, 3, 2, 5, 4, 7, 6};
 
 Solver::Solver()
 {
@@ -177,13 +178,18 @@ pair<int, int> Solver::count_combos(int iterator, pair<int, int> start_pos, vect
 
 	int combos = 0;
 
+	int have_combo = 0;
+	int link_counter = 1;
+	#pragma omp parallel for private(link_counter, have_combo)
 	for (int i = 1; i <= 5; i++) {
 		for (int j = 1; j <= 6; j++) {
 			if (this->visited_board[i][j] == iterator)continue;
 			int base = this->board_[i][j];
 			if (base == 5)continue;
-			int have_combo = 0;
-			int link_counter = 1;
+			// int have_combo = 0;
+			// int link_counter = 1;
+			have_combo = 0;
+			link_counter = 1;
 			for (int k = 1; k <= 5; k++) {
 				if (this->board_[i][j + k] == base)link_counter++;
 				else break;
@@ -212,6 +218,7 @@ pair<int, int> Solver::count_combos(int iterator, pair<int, int> start_pos, vect
 			}
 			if (have_combo) {
 				this->count_combo_colors[base] = iterator;
+				#pragma omp atomic
 				combos++;
 			}
 		}
@@ -304,21 +311,23 @@ Solver::solution Solver::solve(int max_depth)
 				next_y = current_y + Solver::dir[i][1];
 				if (in_board(next_x, next_y)) {
 					state next_state = current_state;
-					next_state.cor = { next_x, next_y };
-					next_state.path.emplace_back(i);
-					int board_hash = hash_board(next_state.cor, { x, y }, next_state.path);
-					pair<int, int> is_ok = Solver::count_combos(global_iterator++, { x, y }, next_state.path);
-					next_state.combo = is_ok.first;
-					if (is_ok.second) {
-						//cout << "GOOD" << endl;
-						//cout << next_state.combo << " " << next_state.path.size() << endl;
-						//Solver::apply_board({ x, y }, next_state.path);
-						//Solver::print_board();
-						return { {x, y}, next_state.path };
+					if(next_state.path.size() == 0 || next_state.path.back()!=conti[i]){
+						next_state.cor = { next_x, next_y };
+						next_state.path.emplace_back(i);
+						int board_hash = hash_board(next_state.cor, { x, y }, next_state.path);
+						pair<int, int> is_ok = Solver::count_combos(global_iterator++, { x, y }, next_state.path);
+						next_state.combo = is_ok.first;
+						if (is_ok.second) {
+							//cout << "GOOD" << endl;
+							//cout << next_state.combo << " " << next_state.path.size() << endl;
+							//Solver::apply_board({ x, y }, next_state.path);
+							//Solver::print_board();
+							return { {x, y}, next_state.path };
+						}
+						if (existed_board.count(board_hash) || next_state.path.size() > max_depth)continue;
+						existed_board.insert(board_hash);
+						que.push(next_state);
 					}
-					if (existed_board.count(board_hash) || next_state.path.size() > max_depth)continue;
-					existed_board.insert(board_hash);
-					que.push(next_state);
 				}
 			}
 			if (global_iterator >= 300000)break;
