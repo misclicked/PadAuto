@@ -15,12 +15,13 @@ public:
 		vector<int> directions;
 	};
 	const static int dir[8][2];
+	int board[15][15];
 	Solver76::solution solve(int max_depth);
 private:
 	void print_board();
 	void print_board_();
 	void apply_board(pair<int, int> start_pos, vector<int> path);
-	int board[15][15], board_[15][15], visited_board[15][15], count_combo_colors[6];
+	int board_[15][15], visited_board[15][15], count_combo_colors[6];
 	string input_board_string;
 	bool in_board(int x, int y);
 	pair<int, int> count_combos(int iterator, pair<int, int> start_pos, vector<int> path);

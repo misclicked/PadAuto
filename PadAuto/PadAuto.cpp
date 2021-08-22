@@ -48,13 +48,23 @@ int main()
             //cout << "solution ready: steps: " << solution.directions.size() << endl;
             //cin.get();
 
+            cout << solver.board[1][4] << endl;;
+            cout << solver.board[6][4] << endl;;
+            
             Solver76::solution solution;
 
-            solution.starting_position = { 6, 4 };
-            solution.directions.push_back(UP);
-            solution.directions.push_back(UP);
-            solution.directions.push_back(UP);
-            solution.directions.push_back(UP);
+            if (solver.board[1][4] == 0 || solver.board[1][4] == 1 || solver.board[6][4] == 4) {
+                solution.starting_position = { 1, 4 };
+                solution.directions.push_back(DOWN);
+            }
+            else {
+                solution.starting_position = { 6, 4 };
+                solution.directions.push_back(UP);
+                solution.directions.push_back(UP);
+                solution.directions.push_back(UP);
+                solution.directions.push_back(UP);
+
+            }
             solution.directions.push_back(LUP);
             solution.directions.push_back(DOWN);
             solution.directions.push_back(LUP);
@@ -103,9 +113,22 @@ int main()
             solution.directions.push_back(DOWN);
             solution.directions.push_back(RIGHT);
             solution.directions.push_back(UP);
-            solution.directions.push_back(RDOWN);
-            solution.directions.push_back(UP);
-            solution.directions.push_back(UP);
+            if (solver.board[1][4] == 0 || solver.board[1][4] == 1 || solver.board[6][4] == 4) {
+                solution.starting_position = { 1, 4 };
+                solution.directions.push_back(RDOWN);
+                solution.directions.push_back(UP);
+                solution.directions.push_back(LDOWN);
+                solution.directions.push_back(RIGHT);
+                solution.directions.push_back(RUP);
+                solution.directions.push_back(LUP);
+            }
+            else {
+                solution.starting_position = { 6, 4 };
+                solution.directions.push_back(RDOWN);
+                solution.directions.push_back(UP);
+                solution.directions.push_back(UP);
+
+            }
 
 
             mouse_mover.Move(solution);
