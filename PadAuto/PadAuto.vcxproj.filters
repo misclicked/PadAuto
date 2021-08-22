@@ -27,6 +27,12 @@
     <ClCompile Include="MouseMover.cpp">
       <Filter>來源檔案</Filter>
     </ClCompile>
+    <ClCompile Include="Solver76.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
+    <ClCompile Include="MouseMover76.cpp">
+      <Filter>來源檔案</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Solver.h">
@@ -36,6 +42,12 @@
       <Filter>標頭檔</Filter>
     </ClInclude>
     <ClInclude Include="MouseMover.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="Solver76.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="MouseMover76.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
   </ItemGroup>

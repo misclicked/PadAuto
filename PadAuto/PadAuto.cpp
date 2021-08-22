@@ -2,13 +2,20 @@
 //
 
 #include <iostream>
-#include "Solver.h"
+#include "Solver76.h"
 #include <string>
 #include <windows.h>
 #include "WindowGrabber.h"
-#include "MouseMover.h"
+#include "MouseMover76.h"
 using namespace std;
-#define OFFSET 96
+#define RIGHT 0
+#define LEFT 1
+#define DOWN 2
+#define UP 3
+#define RDOWN 4
+#define LUP 5
+#define RUP 6
+#define LDOWN 7
 
 int main()
 {
@@ -16,7 +23,7 @@ int main()
     HWND window = ::FindWindowEx(0, 0, TEXT("SDL_app"), 0);
     RECT rect = { 0 };
     GetWindowRect(window, &rect);
-    MouseMover mouse_mover;
+    MouseMover76 mouse_mover;
     mouse_mover.rect_bottom = rect.bottom;
     mouse_mover.rect_right = rect.right;
 
@@ -27,7 +34,7 @@ int main()
     while (true)
     {
         WindowGrabber wg;
-        Solver solver;
+        Solver76 solver;
         if (GetKeyState(VK_NUMPAD0) & 0x8000) {
             cout << "key pressed" << endl;
             int height;
@@ -36,10 +43,70 @@ int main()
 
             //solver.init("420344302252025230522023111111");
             solver.init(pixels, height, width);
-            Solver::solution solution = solver.solve(20);
+            //Solver::solution solution = solver.solve(20);
 
-            cout << "solution ready: steps: " << solution.directions.size() << endl;
+            //cout << "solution ready: steps: " << solution.directions.size() << endl;
             //cin.get();
+
+            Solver76::solution solution;
+
+            solution.starting_position = { 6, 4 };
+            solution.directions.push_back(UP);
+            solution.directions.push_back(UP);
+            solution.directions.push_back(UP);
+            solution.directions.push_back(UP);
+            solution.directions.push_back(LUP);
+            solution.directions.push_back(DOWN);
+            solution.directions.push_back(LUP);
+            solution.directions.push_back(DOWN);
+            solution.directions.push_back(LUP);
+            solution.directions.push_back(RIGHT);
+            solution.directions.push_back(RIGHT);
+            solution.directions.push_back(DOWN);
+            solution.directions.push_back(LEFT);
+            solution.directions.push_back(LEFT);
+            solution.directions.push_back(DOWN);
+            solution.directions.push_back(RIGHT);
+            solution.directions.push_back(RIGHT);
+            solution.directions.push_back(LUP);
+            solution.directions.push_back(LEFT);
+
+            solution.directions.push_back(DOWN);
+            solution.directions.push_back(DOWN);
+            solution.directions.push_back(RDOWN);
+            solution.directions.push_back(RIGHT);
+            solution.directions.push_back(RDOWN);
+            solution.directions.push_back(RIGHT);
+            solution.directions.push_back(RIGHT);
+            solution.directions.push_back(RIGHT);
+            solution.directions.push_back(UP);
+            solution.directions.push_back(UP);
+            solution.directions.push_back(LDOWN);
+            solution.directions.push_back(LEFT);
+            solution.directions.push_back(LEFT);
+            solution.directions.push_back(LEFT);
+            solution.directions.push_back(RDOWN);
+            solution.directions.push_back(RIGHT);
+            solution.directions.push_back(RIGHT);
+            solution.directions.push_back(RIGHT);
+            solution.directions.push_back(UP);
+            solution.directions.push_back(LEFT);
+            solution.directions.push_back(LEFT);
+            solution.directions.push_back(LEFT);
+            solution.directions.push_back(RDOWN);
+            solution.directions.push_back(RIGHT);
+            solution.directions.push_back(RIGHT);
+            solution.directions.push_back(LUP);
+            solution.directions.push_back(LUP);
+            solution.directions.push_back(LEFT);
+            solution.directions.push_back(DOWN);
+            solution.directions.push_back(DOWN);
+            solution.directions.push_back(RIGHT);
+            solution.directions.push_back(UP);
+            solution.directions.push_back(RDOWN);
+            solution.directions.push_back(UP);
+            solution.directions.push_back(UP);
+
 
             mouse_mover.Move(solution);
         }

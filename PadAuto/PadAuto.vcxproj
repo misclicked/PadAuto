@@ -140,13 +140,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="MouseMover.cpp" />
+    <ClCompile Include="MouseMover76.cpp" />
     <ClCompile Include="PadAuto.cpp" />
     <ClCompile Include="Solver.cpp" />
+    <ClCompile Include="Solver76.cpp" />
     <ClCompile Include="WindowGrabber.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MouseMover.h" />
+    <ClInclude Include="MouseMover76.h" />
     <ClInclude Include="Solver.h" />
+    <ClInclude Include="Solver76.h" />
     <ClInclude Include="WindowGrabber.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
