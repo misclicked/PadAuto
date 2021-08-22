@@ -51,9 +51,9 @@ void Solver76::init(vector<unsigned char> pixels, int height, int width)
 		}
 	}
 
-	int top_left_x = 563;
+	int top_left_x = 595;
 	int top_left_y = 3;
-	int bot_right_x = 934;
+	int bot_right_x = 966;
 	int bot_right_y = 451;
 
 	int box_size_width = (bot_right_y - top_left_y) / 7;

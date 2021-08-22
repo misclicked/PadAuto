@@ -4,7 +4,7 @@
 void MouseMover76::Move(Solver76::solution solution)
 {
     int top_left_x = this->rect_right - 424;
-    int top_left_y = this->rect_bottom - 357;
+    int top_left_y = this->rect_bottom - 353;
 
 
     int box_size_width = 63;
