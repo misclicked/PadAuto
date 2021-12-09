@@ -51,9 +51,9 @@ void Solver::init(vector<unsigned char> pixels, int height, int width)
 		}
 	}
 
-	int top_left_x = 595;
+	int top_left_x = 563;
 	int top_left_y = 3;
-	int bot_right_x = 966;
+	int bot_right_x = 933;
 	int bot_right_y = 451;
 
 	int box_size_width = (bot_right_y - top_left_y) / 6;
@@ -117,7 +117,7 @@ void Solver::init(vector<unsigned char> pixels, int height, int width)
 				this->board[i][j] = this->input_board_string[cpos++] - '0';
 			}
 		}
-	//Solver::print_board();
+	Solver::print_board();
 }
 
 void Solver::print_board()
@@ -253,7 +253,6 @@ int Solver::hash_board(pair<int, int> cur_pos, pair<int, int> start_pos, vector<
 
 	return result;
 }
-
 Solver::solution Solver::solve(int max_depth)
 {
 	typedef pair<int, pair<int, int>> pipii;
@@ -320,4 +319,233 @@ Solver::solution Solver::solve(int max_depth)
 		}
 	}
 	return solution();
+}
+
+int Solver::count_distance(int(&target_board)[15][15], pair<pair<int, int>, int> target, pair<int, int> start_pos, vector<int> path) {
+	memcpy(this->board_, this->board, sizeof(this->board));
+
+	int curi = start_pos.first, curj = start_pos.second, nexti, nextj;
+
+	for (const auto& it : path) {
+		nexti = curi + Solver::dir[it][0];
+		nextj = curj + Solver::dir[it][1];
+		swap(this->board_[curi][curj], this->board_[nexti][nextj]);
+		curi = nexti, curj = nextj;
+	}
+	int ret = 0;
+	int best = INT_MAX;
+	int besti, bestj;
+	for (int ii = 1; ii <= 5; ii++) {
+		for (int jj = 1; jj <= 6; jj++) {
+			if (this->board_[ii][jj] == target.second) {
+				int dis = abs(ii - target.first.first) + abs(jj - target.first.second);
+				if (best > dis) {
+					best = dis;
+					besti = ii;
+					bestj = jj;
+				}
+			}
+		}
+	}
+	ret += best;
+	this->board_[besti][bestj] = -1;
+	return ret;
+}
+
+Solver::state Solver::path_to_target(int(&target_board)[15][15], pair<int, int> target, Solver::state pstate)
+{
+
+	queue<state> que;
+	que.push(pstate);
+	int current_x, current_y, next_x, next_y;
+
+	if(pstate.cor == target)
+		return pstate;
+
+	while (que.size()) {
+		state current_state = que.front();
+		que.pop();
+		current_x = current_state.cor.first;
+		current_y = current_state.cor.second;
+		for (int i = 0; i < 8; i++) {
+			next_x = current_x + Solver::dir[i][0];
+			next_y = current_y + Solver::dir[i][1];
+			if (in_board(next_x, next_y)&&target_board[next_x][next_y]!=99) {
+				state next_state = current_state;
+				next_state.cor = { next_x, next_y };
+				next_state.path.push_back(i);
+				if (next_x == target.first && next_y == target.second) {
+					return next_state;
+				}
+				que.push(next_state);
+			}
+		}
+
+	}
+	return pstate;
+}
+
+Solver::state Solver::solve_partial(int(&target_board)[15][15], pair<pair<int, int>, int> target, Solver::state pstate)
+{
+	int best = INT_MAX;
+	int besti, bestj;
+	for (int ii = 1; ii <= 5; ii++) {
+		for (int jj = 1; jj <= 6; jj++) {
+			if (this->board[ii][jj] == target.second && target_board[ii][jj]!=99) {
+				int dis = max(abs(ii - target.first.first) , abs(jj - target.first.second));
+				if (best > dis) {
+					best = dis;
+					besti = ii;
+					bestj = jj;
+				}
+			}
+		}
+	}
+	pair<int, int> start_position = pstate.cor;
+
+
+	Solver::state ret;
+	ret.cor = pstate.cor;
+
+	pair<int, int> bestp = { besti, bestj };
+	if (bestp == target.first) {
+		return ret;
+	}
+	//move current to target
+	target_board[besti][bestj] = 99;
+
+	Solver::state p = path_to_target(target_board, target.first, pstate);
+	pstate.cor = p.cor;
+
+	for (auto it : p.path)ret.path.push_back(it);
+	ret.cor = p.cor;
+
+	apply_board(start_position, p.path);
+	target_board[besti][bestj] = -1;
+
+
+
+	while (true) {
+		//move current to bestp
+		pair<int, int> start_position = pstate.cor;
+		Solver::state p = path_to_target(target_board, bestp, pstate);
+		pstate.cor = p.cor;
+
+		for (auto it : p.path)ret.path.push_back(it);
+		ret.cor = p.cor;
+
+		//bestp moved
+		pair<int, int> next_bestp;
+		int last_dir = ret.path.back();
+		int last_dir_oppo = last_dir^1;
+
+		next_bestp.first = bestp.first + this->dir[last_dir_oppo][0];
+		next_bestp.second = bestp.second + this->dir[last_dir_oppo][1];
+
+		bestp = next_bestp;
+		apply_board(start_position, p.path);
+		if (bestp == target.first) {
+			break;
+		}
+		target_board[bestp.first][bestp.second] = 99;
+
+		//move current to target
+
+		pair<int, int> new_target_behind_bestp = target.first;
+
+		if (target.first.first - bestp.first)
+			new_target_behind_bestp.first = bestp.first + ((target.first.first - bestp.first) / abs(target.first.first - bestp.first));
+		if (target.first.second - bestp.second)
+			new_target_behind_bestp.second = bestp.second + ((target.first.second - bestp.second) / abs(target.first.second - bestp.second));
+
+		if (target_board[new_target_behind_bestp.first][new_target_behind_bestp.second] == 99)new_target_behind_bestp = target.first;
+
+		start_position = pstate.cor;
+		p = path_to_target(target_board, new_target_behind_bestp, pstate);
+		pstate.cor = p.cor;
+
+		for (auto it : p.path)ret.path.push_back(it);
+		ret.cor = p.cor;
+
+		apply_board(start_position, p.path);
+		target_board[bestp.first][bestp.second] = -1;
+	}
+
+	return ret;
+}
+
+void Solver::solve_partial_(int(&target_board)[15][15], pair<pair<int, int>, int> target, Solver::state& pstate, Solver::solution& ret_sol)
+{
+	target_board[target.first.first][target.first.second] = target.second;
+	Solver::state p = solve_partial(target_board, target, pstate);
+	for (auto it : p.path) {
+		ret_sol.directions.push_back(it);
+	}
+	pstate.cor = p.cor;
+	target_board[target.first.first][target.first.second] = 99;
+}
+
+
+
+Solver::solution Solver::solvePlain(int(target_board_tmp)[15][15])
+{
+	int target_board[15][15];
+	memset(target_board, -1, sizeof(target_board));
+
+	Solver::solution ret_sol, tmp_sol;
+	state pstate;
+
+	//起手
+
+	int found = 0;
+	for (int i = 1; i <= 5; i++) {
+		for (int j = 1; j <= 6; j++) {
+			if (this->board[i][j] == target_board_tmp[1][6]) {
+				pstate.cor = { i,j };
+				ret_sol.starting_position = { i,j };
+				found = 1;
+				this->board[i][j] = 98;
+				break;
+			}
+		}
+		if (found)
+			break;
+	}
+	target_board_tmp[1][6] = 98;
+	for (int i = 5; i >= 3; i--) {
+		if (i & 1)
+			for (int j = 1; j <= 6; j++) {
+				if (target_board_tmp[i][j] == -1)continue;
+				solve_partial_(target_board, { {i,j},target_board_tmp[i][j] }, pstate, ret_sol);
+			}
+		else
+			for (int j = 6; j >= 1; j--) {
+				if (target_board_tmp[i][j] == -1)continue;
+				solve_partial_(target_board, { {i,j},target_board_tmp[i][j] }, pstate, ret_sol);
+			}
+	}
+	for (int j = 1; j <= 6; j++) {
+		if (j & 1)
+			for (int i = 1; i <= 2; i++) {
+				if (target_board_tmp[i][j] == -1)continue;
+				solve_partial_(target_board, { {i,j},target_board_tmp[i][j] }, pstate, ret_sol);
+			}
+		else
+			for (int i = 2; i >= 1; i--) {
+				if (target_board_tmp[i][j] == -1)continue;
+				solve_partial_(target_board, { {i,j},target_board_tmp[i][j] }, pstate, ret_sol);
+			}
+	}
+	return ret_sol;
+	//0火1水2木3光4暗5心 99不能動 -1隨便 98 holding
+}
+
+void Solver::backup_board()
+{
+	memcpy(this->backupboard, this->board, sizeof(this->board));
+}
+
+void Solver::resume_board()
+{
+	memcpy(this->board, this->backupboard, sizeof(this->backupboard));
 }
